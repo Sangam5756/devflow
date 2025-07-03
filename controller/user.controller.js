@@ -1,30 +1,40 @@
+const { StatusCodes } = require("http-status-codes");
 const NotimplementedError = require("../error/notimplemented.error");
+const {UserRepository} = require("../repositories");
+const {UserService} = require("../services");
 
-function updateUser(req, res) {
+const userService = new UserService(new UserRepository());
+
+
+async function login(req, res) {
   try {
-    res.status(200).send("User update is not implemented yet");
+    const userData = req.body;
+    const user = await userService.login(userData);
+    
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      error: false,
+      data: user,
+      message: "User logged in successfully"
+    });
   } catch (error) {
-    console.error("Error in updateUser:", error);
+    next(error);
   }
 }
 
 
 
-function login(req, res) {
+async function register(req, res) {
   try {
-    res.status(200).send("User login is not implemented yet");
-  } catch (error) {
-    console.error("Error in login:", error);
-  }
-}
-
-function signup(req, res) {
-  try {
-    res.status(200).send("User signup is not implemented yet");
+    const userData = req.body;
+    const user =await userService.createUser(userData);
+    res.status(200).json({message:"User signup is not implemented yet",data:user});
   } catch (error) {
     console.error("Error in signup:", error);
   }
 }
+
+
 
 function getUser(req, res,next) {
   try {
@@ -38,9 +48,24 @@ function getUser(req, res,next) {
   }
 }
 
+
+
+function updateUser(req, res) {
+  try {
+    res.status(200).send("User update is not implemented yet");
+  } catch (error) {
+    console.error("Error in updateUser:", error);
+  }
+}
+
+
+
+
+
+
 module.exports = {
   getUser,
-  signup,
+  register,
   login,
   updateUser
 };
