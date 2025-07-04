@@ -2,6 +2,7 @@ const express = require("express");
 const { PORT } = require("./config/server.config");
 const { appRouter } = require("./routes");
 const errorHandler = require("./utils/errorHandler");
+const connectDB = require("./config/db.config");
 
 const app = express();
 
@@ -16,6 +17,13 @@ app.get("/", (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+connectDB()
+  .then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
