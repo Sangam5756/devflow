@@ -2,8 +2,10 @@ FROM node
 
 WORKDIR /app/devflow
 
-COPY . .
+COPY  ./package.json ./
 
 RUN npm install
+
+COPY . .
 
 CMD ["npm","run","dev"]

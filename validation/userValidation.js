@@ -12,9 +12,24 @@ const loginDataValidate = (loginData) => {
     throw new BadRequestError("Invalid email format");
   }
 
-  if (password.length < 6) {
+  if (!validator.isLength(password, { min: 6 })) {
     throw new BadRequestError("Password must be at least 6 characters");
   }
 };
 
-module.exports = loginDataValidate;
+
+
+const signupDataValidate = (signupData) => {
+  const { username, email, password, bio } = signupData;
+  if (!email || !password || !username) {
+    throw new BadRequestError("missing Required Fields");
+  }
+  if (!validator.isEmail(email)) {
+    throw new BadRequestError("Invalid Email Address");
+  }
+  if (!validator.isLength(password, { min: 6 })) {
+    throw new BadRequestError("Password must be at least 6 characters");
+  }
+};
+
+module.exports = { loginDataValidate, signupDataValidate };
