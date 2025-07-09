@@ -13,3 +13,17 @@
             - me
             - updateProfile
             
+### POST API
+        - REPOSITORY LAYER
+            - findPostById
+            - createPOst
+            - updatePost
+            - DelelePost
+            - getAllPost
+            -getPostById
+            
+        Service Layer
+            - createPOST
+            - UPdatePOST
+            - DELTEPOST
+            - READ
