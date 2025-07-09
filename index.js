@@ -15,6 +15,7 @@ app.get("/", (req, res) => {
   res.status(200).send("server is running");
 });
 
+console.log("server is started")
 app.use(errorHandler);
 
 connectDB()

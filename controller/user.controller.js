@@ -2,13 +2,14 @@ const { StatusCodes } = require("http-status-codes");
 const NotimplementedError = require("../error/notimplemented.error");
 const { UserRepository } = require("../repositories");
 const { UserService } = require("../services");
+const NotFound = require("../error/notfound.error");
 
 const userService = new UserService(new UserRepository());
 
 async function login(req, res, next) {
   try {
     const userData = req.body;
-    const { user, token } = await userService.login(userData);
+    const { payload, token } = await userService.login(userData);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -20,7 +21,8 @@ async function login(req, res, next) {
     return res.status(StatusCodes.OK).json({
       success: true,
       error: false,
-      data: user,
+      data: payload,
+      token,
       message: "User logged in successfully",
     });
   } catch (error) {
@@ -28,21 +30,43 @@ async function login(req, res, next) {
   }
 }
 
-async function register(req, res) {
+async function register(req, res,next) {
   try {
     const userData = req.body;
-    const user = await userService.createUser(userData);
-    res
-      .status(200)
-      .json({ message: "User signup is not implemented yet", data: user });
+    const { payload, token } = await userService.createUser(userData);
+
+    res.status(StatusCodes.CREATED).json({
+      success: true,
+      error: false,
+      data: payload,
+      message: "Signup successfully",
+    });
   } catch (error) {
     console.error("Error in signup:", error);
+    next(error)
   }
 }
 
-function getUser(req, res, next) {
+async function getUser(req, res, next) {
   try {
-    throw NotimplementedError("getUser");
+    const username = req.params.username;
+    const user = await userService.getUserByUsername(username);
+   
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      error: false,
+      data: {
+        id:user._id,
+        username:user.username,
+        email:user.email,
+        bio:user.bio
+      },
+      message: "User found",
+    });
+    
+
+
   } catch (error) {
     next(error);
     console.error("Error in getUser:", error);
