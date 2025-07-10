@@ -1,6 +1,5 @@
 const JWT = require("jsonwebtoken");
 const {JWT_SECRET} = require("../config/server.config");
-
 const generateJWTtoken = (user) => {
   
   const token = JWT.sign({

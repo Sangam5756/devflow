@@ -2,9 +2,10 @@ const { StatusCodes } = require("http-status-codes");
 const NotimplementedError = require("../error/notimplemented.error");
 const { UserRepository } = require("../repositories");
 const { UserService } = require("../services");
-const NotFound = require("../error/notfound.error");
 
-const userService = new UserService(new UserRepository());
+const userService = new UserService(UserRepository);
+
+
 
 async function login(req, res, next) {
   try {
@@ -80,6 +81,28 @@ function updateUser(req, res) {
     console.error("Error in updateUser:", error);
   }
 }
+
+
+
+function sendEmailOtp (req,res,next){
+  // send
+  try {
+    throw NotimplementedError("VerifyEmail");
+  } catch (error) {
+    console.error("Error in verifyEmail:", error);
+    next(error)
+  }
+}
+
+function verifyEmailOtp(req,res,next){  
+  try {
+    throw NotimplementedError("VerifyEmailOtp");
+  } catch (error) {
+    next(error)
+  }
+}
+
+
 
 module.exports = {
   getUser,

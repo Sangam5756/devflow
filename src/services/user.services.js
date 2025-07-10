@@ -49,7 +49,7 @@ class UserService {
       throw new BadRequestError("User already exists");
     } 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const user = await this.userRepository.createUser({...userData,password:hashedPassword});
+    const user = await this.userRepository.create({...userData,password:hashedPassword});
     const token = generateJWTtoken(user);
     
     const payload = {
@@ -71,6 +71,9 @@ class UserService {
     }
     return user;
   }
+
+
+  
 }
 
 module.exports = UserService;
