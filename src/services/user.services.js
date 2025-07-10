@@ -5,14 +5,13 @@ const { generateJWTtoken } = require("../utils/jwt");
 const { UserDataValidate } = require("../validation");
 const bcrypt = require("bcrypt");
 
-
 class UserService {
   constructor(UserRepository) {
     this.userRepository = UserRepository;
   }
 
   async login(userData) {
-    UserDataValidate.loginDataValidate(userData);    
+    UserDataValidate.loginDataValidate(userData);
     const userExists = await this.userRepository.findUserByEmail(
       userData.email
     );
@@ -20,7 +19,10 @@ class UserService {
       throw new NotFound("User does not exist");
     }
 
-    const isPasswordValid = await bcrypt.compare(userData.password,userExists.password);
+    const isPasswordValid = await bcrypt.compare(
+      userData.password,
+      userExists.password
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedError("Invalid Credentials");
@@ -47,11 +49,14 @@ class UserService {
     const isUser = await this.userRepository.findUserByEmail(userData.email);
     if (isUser) {
       throw new BadRequestError("User already exists");
-    } 
+    }
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const user = await this.userRepository.create({...userData,password:hashedPassword});
+    const user = await this.userRepository.create({
+      ...userData,
+      password: hashedPassword,
+    });
     const token = generateJWTtoken(user);
-    
+
     const payload = {
       _id: user._id,
       email: user.email,
@@ -59,21 +64,42 @@ class UserService {
       bio: user?.bio,
     };
     // create user
-    return {payload,token};
+    return { payload, token };
   }
 
-
-  async getUserByUsername(username){
+  async getUserByUsername(username) {
     const user = await this.userRepository.findUserByUsername(username);
-    
-    if(!user){
+
+    if (!user) {
       throw new NotFound(`User not found with username ${username}`);
     }
     return user;
   }
 
+  async updateUser(userId, updateData) {
+    const allowedFields = ["username", "email", "bio", "password"];
+    const updatePayload = {};
 
-  
+    for (const key of allowedFields) {
+      if (updateData[key]) {
+        if (key === "password") {
+          updatePayload[key] = await bcrypt.hash(updateData[key], 10);
+        } else {
+          updatePayload[key] = updateData[key];
+        }
+      }
+    }
+
+    const updatedUser = await this.userRepository.updateUserById(
+      userId,
+      updatePayload
+    );
+    if (!updatedUser) {
+      throw new NotFound("User not found or update failed");
+    }
+
+    return updatedUser;
+  }
 }
 
 module.exports = UserService;

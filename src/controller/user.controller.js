@@ -5,8 +5,6 @@ const { UserService } = require("../services");
 
 const userService = new UserService(UserRepository);
 
-
-
 async function login(req, res, next) {
   try {
     const userData = req.body;
@@ -14,9 +12,9 @@ async function login(req, res, next) {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "None",
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "Lax", // ✅ allows sending cookie across routes
+      secure: false, // ✅ allows it over HTTP (localhost)
+      maxAge: 7 * 24 * 60 * 60 * 1000, // optional
     });
 
     return res.status(StatusCodes.OK).json({
@@ -31,7 +29,7 @@ async function login(req, res, next) {
   }
 }
 
-async function register(req, res,next) {
+async function register(req, res, next) {
   try {
     const userData = req.body;
     const { payload, token } = await userService.createUser(userData);
@@ -44,7 +42,7 @@ async function register(req, res,next) {
     });
   } catch (error) {
     console.error("Error in signup:", error);
-    next(error)
+    next(error);
   }
 }
 
@@ -52,57 +50,65 @@ async function getUser(req, res, next) {
   try {
     const username = req.params.username;
     const user = await userService.getUserByUsername(username);
-   
 
     res.status(StatusCodes.OK).json({
       success: true,
       error: false,
       data: {
-        id:user._id,
-        username:user.username,
-        email:user.email,
-        bio:user.bio
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
       },
       message: "User found",
     });
-    
-
-
   } catch (error) {
     next(error);
     console.error("Error in getUser:", error);
   }
 }
 
-function updateUser(req, res) {
+async function updateUser(req, res, next) {
   try {
-    res.status(200).send("User update is not implemented yet");
+    const userId = req.user._id;
+    const updateData = req.body;
+
+    const updatedUser = await userService.updateUser(userId, updateData);
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      error: false,
+      data: {
+        id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        bio: updatedUser.bio,
+      },
+      message: "User updated successfully",
+    });
   } catch (error) {
     console.error("Error in updateUser:", error);
+    next(error);
   }
 }
 
-
-
-function sendEmailOtp (req,res,next){
+function sendEmailOtp(req, res, next) {
   // send
   try {
     throw NotimplementedError("VerifyEmail");
   } catch (error) {
     console.error("Error in verifyEmail:", error);
-    next(error)
+    next(error);
   }
 }
 
-function verifyEmailOtp(req,res,next){  
+function verifyEmailOtp(req, res, next) {
   try {
     throw NotimplementedError("VerifyEmailOtp");
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
-
-
 
 module.exports = {
   getUser,

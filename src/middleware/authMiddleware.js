@@ -6,7 +6,7 @@ const { verifyJWTtoken } = require("../utils/jwt");
 async function authMiddleware(req, res, next) {
   try {
     const token = req.cookies.token;
-
+    console.log("Token from cookies:", req.cookies.token);
     if (!token) {
       throw new UnauthorizedError("");
     }
