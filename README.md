@@ -13,6 +13,7 @@
             - me
             - updateProfile
             
+
 ### POST API
         - REPOSITORY LAYER
             - findPostById
@@ -27,3 +28,4 @@
             - UPdatePOST
             - DELTEPOST
             - READ
+            
