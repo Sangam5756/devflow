@@ -6,3 +6,5 @@ class QuestionRepository extends BaseRepository {
     super(Question);
   }
 }
+
+module.exports = new QuestionRepository();

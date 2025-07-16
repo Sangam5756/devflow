@@ -8,13 +8,16 @@ async function authMiddleware(req, res, next) {
     const token = req.cookies.token;
 
     if (!token) {
-      throw new UnauthorizedError("");
+      throw new UnauthorizedError("Unauthenticated Request ,please log in");
     }
 
     const decoded = verifyJWTtoken(token);
-
+    console.log(decoded)
     const user = await User.findById(decoded.id).select("-password");
-    req.user = user;
+    if(!user){
+      throw new UnauthorizedError("unauthorized");
+    }
+    req.user = decoded;
 
     next();
   } catch (error) {

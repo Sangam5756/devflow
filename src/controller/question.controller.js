@@ -1,13 +1,32 @@
+const { StatusCodes } = require("http-status-codes");
+const BadRequestError = require("../error/badrequest.error");
 const NotimplementedError = require("../error/notimplemented.error");
+const { QuestionRepository } = require("../repositories");
+const { QuestionService } = require("../services/");
 
-function createQuestion(req, res, next) {
+const questionService = new QuestionService(QuestionRepository);
+
+async function createQuestion(req, res, next) {
   try {
-    throw new NotimplementedError("createQuestion");
+    const question = await questionService.createQuestion({
+      ...req.user,
+      ...req.body,
+    });
+
+    if (!question) {
+      throw new BadRequestError("something went wrong");
+    }
+
+    res.status(StatusCodes.CREATED).json({
+      success: true,
+      error: false,
+      data: question,
+      message: "Question Successfully Created",
+    });
   } catch (error) {
     next(error);
   }
 }
-
 function updateQuestion(req, res, next) {
   try {
     throw new NotimplementedError("updateQuestion");
@@ -15,7 +34,6 @@ function updateQuestion(req, res, next) {
     next(error);
   }
 }
-
 function deleteQuestion(req, res, next) {
   try {
     throw new NotimplementedError("deleteQuestion");
@@ -31,19 +49,24 @@ function getQuestion(req, res, next) {
     next(error);
   }
 }
-function getQuestions(req, res, next) {
+async function getQuestions(req, res, next) {
   try {
-    throw new NotimplementedError("getQuestions");
+    const questions = await questionService.getAllQuestions(req.user);
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      error: false,
+      message: "retrieved All Question",
+      data: questions,
+    });
   } catch (error) {
     next(error);
   }
 }
 
-
-module.exports={
-    createQuestion,
-    updateQuestion,
-    deleteQuestion,
-    getQuestion,
-    getQuestions
-}
+module.exports = {
+  createQuestion,
+  updateQuestion,
+  deleteQuestion,
+  getQuestion,
+  getQuestions,
+};
