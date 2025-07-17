@@ -4,6 +4,7 @@ const { appRouter } = require("./src/routes");
 const errorHandler = require("./src/utils/errorHandler");
 const connectDB = require("./src/config/db.config");
 const cookieparser = require("cookie-parser");
+require("./src/queue/worker")
 
 const app = express();
 
@@ -17,13 +18,13 @@ app.get("/", (req, res) => {
   res.status(200).send("server is running");
 });
 
-console.log("server is started")
+
 app.use(errorHandler);
 
 connectDB()
   .then(() => {
     console.log("Connected to MongoDB");
-    app.listen(PORT, () => {
+    app.listen(PORT,async () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })

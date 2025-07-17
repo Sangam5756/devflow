@@ -1,21 +1,28 @@
-import nodemailer from "nodemailer";
-
+const nodemailer = require("nodemailer");
+const {
+  SMTP_HOST,
+  SMTP_PORT,
+  SMTP_PASSWORD,
+  SMTP_MAIL,
+  SMTP_SERVICE,
+} = require("../config/server.config");
 
 const sendEmail = async (options) => {
+  console.log(options)
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      service: process.env.SMTP_SERVICE,
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      service: SMTP_SERVICE,
       secure: true,
       auth: {
-        user: process.env.SMTP_MAIL,
-        pass: process.env.SMTP_PASSWORD,
+        user: SMTP_MAIL,
+        pass: SMTP_PASSWORD,
       },
     });
 
     const mailOptions = {
-      from: process.env.SMTP_MAIL,
+      from: SMTP_MAIL,
       to: options.email,
       subject: options.subject,
       html: options.message,
@@ -30,4 +37,4 @@ const sendEmail = async (options) => {
   }
 };
 
-export default sendEmail;
+module.exports= sendEmail;

@@ -8,13 +8,12 @@ class UserRepository extends BaseRepository {
     super(userModel);
   }
 
-  async findUserByEmail(email) {
-    return this.model.findOne({ email });
+  async findUserByEntitiy(entity) {
+    console.log(entity)
+    return this.model.findOne(entity);
   }
 
-  async findUserByUsername(username) {
-    return this.model.findOne({ username });
-  }
+ 
 }
 
 module.exports = new UserRepository();
