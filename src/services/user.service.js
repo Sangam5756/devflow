@@ -151,6 +151,32 @@ class UserService {
 
     return true;
   }
+
+
+  async updateUser(userId, updateData) {
+    const allowedFields = ["username", "email", "bio", "password"];
+    const updatePayload = {};
+
+    for (const key of allowedFields) {
+      if (updateData[key]) {
+        if (key === "password") {
+          updatePayload[key] = await bcrypt.hash(updateData[key], 10);
+        } else {
+          updatePayload[key] = updateData[key];
+        }
+      }
+    }
+
+    const updatedUser = await this.userRepository.updateUserById(
+      userId,
+      updatePayload
+    );
+    if (!updatedUser) {
+      throw new NotFound("User not found or update failed");
+    }
+
+    return updatedUser;
+  }
 }
 
 module.exports = UserService;
