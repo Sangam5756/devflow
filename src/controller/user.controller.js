@@ -12,9 +12,9 @@ async function login(req, res, next) {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "None",
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "Lax", // ✅ allows sending cookie across routes
+      secure: false, // ✅ allows it over HTTP (localhost)
+      maxAge: 7 * 24 * 60 * 60 * 1000, // optional
     });
 
     return res.status(StatusCodes.OK).json({
@@ -68,11 +68,27 @@ async function getUser(req, res, next) {
   }
 }
 
-function updateUser(req, res) {
+async function updateUser(req, res, next) {
   try {
-    res.status(200).send("User update is not implemented yet");
+    const userId = req.user._id;
+    const updateData = req.body;
+
+    const updatedUser = await userService.updateUser(userId, updateData);
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      error: false,
+      data: {
+        id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        bio: updatedUser.bio,
+      },
+      message: "User updated successfully",
+    });
   } catch (error) {
     console.error("Error in updateUser:", error);
+    next(error);
   }
 }
 

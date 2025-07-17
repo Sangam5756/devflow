@@ -14,6 +14,10 @@ class UserRepository extends BaseRepository {
   }
 
  
+
+  async updateUserById(userId, updateData) {
+  return this.model.findByIdAndUpdate(userId, updateData);
+}
 }
 
 module.exports = new UserRepository();
