@@ -11,6 +11,10 @@ class BaseRepository {
     async findById(id) {
       return this.model.findById(id);
     }
+
+    async findOne(data){
+      return this.model.findOne(data);
+    }
   
     async findAll(filter = {}) {
       return this.model.find(filter);
