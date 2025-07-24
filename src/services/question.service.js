@@ -9,6 +9,11 @@ class QuestionService {
     this.questionRepository = QuestionRepository;
   }
 
+  /**
+   * @desc    Creates a new question with user-provided data
+   * @param   {Object} questionBody - title, body, topics, and user ID
+   * @returns {Object} created question
+   */
   async createQuestion(questionBody) {
     QuestionValidate.validateQuestionBody(questionBody);
 
@@ -25,18 +30,34 @@ class QuestionService {
     return question;
   }
 
+  /**
+   * @desc    Retrieves all questions
+   * @param   {string} userId - the user making the request
+   * @returns {Array} list of questions
+   */
   async getAllQuestions(userInfo) {
     const questions = await this.questionRepository.findAllQuestions(userInfo);
 
     return questions;
   }
 
+  /**
+   * @desc    Retrieves a single question by ID
+   * @param   {String|Object} questionId
+   * @returns {Object} question
+   */
   async getQuestion(questionId) {
     const question = await this.questionRepository.findQuestion(questionId);
 
     return question;
   }
 
+  /**
+   * @desc    Deletes a question if the user is the owner
+   * @param   {Object} question - contains questionId and userId
+   * @throws  {NotFoundError|UnauthorizedError}
+   * @returns {Object} deleted question
+   */
   async deleteQuestion(question) {
     const userId = question.userId;
 
@@ -62,6 +83,12 @@ class QuestionService {
     return questions;
   }
 
+  /**
+   * @desc Update a question if a user is the owner
+   * @param {Object} questionBody - includes  title,body,topic,questionId,userId
+   * @throws {NotFoundError| UnauthorizedError}
+   * @returns {Object} - Updated Documents
+   */
   async updateQuestion(questionBody) {
     const { userId, questionId, body, title, topics } = questionBody;
 

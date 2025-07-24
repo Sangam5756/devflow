@@ -1,27 +1,3 @@
-// import js from "@eslint/js";
-// import globals from "globals";
-// import { defineConfig } from "eslint/config";
-
-// export default defineConfig([
-//   {
-//     files: ["**/*.{js,mjs,cjs}"],
-//     languageOptions: {
-//       globals: {
-//         ...globals.node,       
-//         ...globals.commonjs,   
-//       },
-//       sourceType: "commonjs",  
-//     },
-//     plugins: {
-//       js,
-//     },
-//     rules: {
-//       ...js.configs.recommended.rules,
-//       "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-//       "no-console": "off",  
-//     },
-//   },
-// ]);
 import js from "@eslint/js";
 import globals from "globals";
 import { defineConfig } from "eslint/config";
@@ -42,7 +18,6 @@ export default defineConfig([
     rules: {
       ...js.configs.recommended.rules,
 
-      // ✅ STYLE & CLEANLINESS
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "no-console": "off",
       "indent": ["error", 2, { SwitchCase: 1 }],
@@ -57,7 +32,7 @@ export default defineConfig([
       "array-bracket-spacing": ["error", "never"],
       "eol-last": ["error", "always"],
 
-      // ✅ BEST PRACTICES
+   
       "eqeqeq": ["error", "always"],
       "curly": ["error", "all"],
       "no-var": "error",
@@ -65,7 +40,7 @@ export default defineConfig([
       "no-multiple-empty-lines": ["error", { max: 1 }],
       "newline-before-return": "error",
 
-      // ✅ NODE SAFETY
+     
       "callback-return": "warn",
       "handle-callback-err": "warn",
       "no-path-concat": "error",

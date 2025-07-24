@@ -7,8 +7,6 @@ class UserRepository extends BaseRepository {
   }
 
   async findUserByEntitiy(entity) {
-    console.log(entity);
-
     return this.model.findOne(entity);
   }
 

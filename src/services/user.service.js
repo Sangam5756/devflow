@@ -13,7 +13,11 @@ class UserService {
   constructor(UserRepository) {
     this.userRepository = UserRepository;
   }
-
+  /**
+   * @desc Authenticate user and return JWT token
+   * @param {Object} userData - { email, password }
+   * @returns {Object} - { token, payload }
+   */
   async login(userData) {
     UserDataValidate.loginDataValidate(userData);
     const userExists = await this.userRepository.findUserByEntitiy({
@@ -48,6 +52,11 @@ class UserService {
     };
   }
 
+  /**
+   * @desc Create a new user
+   * @param {Object} userData - { email, password, username, [bio]}
+   * @returns {Object} payload and token
+   */
   async createUser(userData) {
     // validation
     UserDataValidate.signupDataValidate(userData);
@@ -75,6 +84,11 @@ class UserService {
     return { payload, token };
   }
 
+  /**
+   * @desc Find user by username
+   * @param {String} username
+   * @returns {Object} user
+   */
   async getUserByUsername(username) {
     const user = await this.userRepository.findUserByEntitiy({
       username: username,
@@ -87,6 +101,38 @@ class UserService {
     return user;
   }
 
+  /**
+   * @desc Update user info
+   * @param {String} userId
+   * @param {Object} updateData - { username, email, bio }
+   * @returns {Object} updated user
+   */
+  async updateUser(userId, updateData) {
+    const allowedFields = ["username", "email", "bio"];
+    const updatePayload = {};
+
+    for (const key of allowedFields) {
+      if (updateData[key]) {
+        updatePayload[key] = updateData[key];
+      }
+    }
+
+    const updatedUser = await this.userRepository.updateUserById(
+      userId,
+      updatePayload,
+    );
+    if (!updatedUser) {
+      throw new NotFound("User not found or update failed");
+    }
+
+    return updatedUser;
+  }
+
+  /**
+   * @desc Send OTP for email verification
+   * @param {Object} user - req.user
+   * @returns {Object} { isVerified }
+   */
   async sendOtp(user) {
     const isUser = await this.userRepository.findUserByEntitiy({
       email: user.email,
@@ -115,6 +161,11 @@ class UserService {
     return { isVerified: true };
   }
 
+  /**
+   * @desc Verify email OTP
+   * @param {Object} userData - { userId, otp }
+   * @returns {Boolean} - verification result
+   */
   async verifyOtp(userData) {
     const { userId, otp } = userData;
 
@@ -153,27 +204,6 @@ class UserService {
     await redisClient.del(redisKey);
 
     return true;
-  }
-
-  async updateUser(userId, updateData) {
-    const allowedFields = ["username", "email", "bio"];
-    const updatePayload = {};
-
-    for (const key of allowedFields) {
-      if (updateData[key]) {
-        updatePayload[key] = updateData[key];
-      }
-    }
-
-    const updatedUser = await this.userRepository.updateUserById(
-      userId,
-      updatePayload,
-    );
-    if (!updatedUser) {
-      throw new NotFound("User not found or update failed");
-    }
-
-    return updatedUser;
   }
 }
 

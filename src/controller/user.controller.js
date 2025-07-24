@@ -4,6 +4,11 @@ const { UserService } = require("../services");
 
 const userService = new UserService(UserRepository);
 
+/**
+ * @route   POST /api/v1/user/login
+ * @desc    Log in user and return JWT token
+ * @access  Public
+ */
 async function login(req, res, next) {
   try {
     const userData = req.body;
@@ -27,6 +32,11 @@ async function login(req, res, next) {
   }
 }
 
+/**
+ * @route   POST /api/v1/user/register
+ * @desc    Register new user
+ * @access  Public
+ */
 async function register(req, res, next) {
   try {
     const userData = req.body;
@@ -45,6 +55,11 @@ async function register(req, res, next) {
   }
 }
 
+/**
+ * @route   GET /api/v1/users/:username
+ * @desc    Get user profile by username
+ * @access  Public
+ */
 async function getUser(req, res, next) {
   try {
     const username = req.params.username;
@@ -66,6 +81,11 @@ async function getUser(req, res, next) {
   }
 }
 
+/**
+ * @route   PUT /api/v1/users/profile
+ * @desc    Update user profile
+ * @access  Protected (require authentication)
+ */
 async function updateUser(req, res, next) {
   try {
     const userId = req.user._id;
@@ -91,6 +111,11 @@ async function updateUser(req, res, next) {
   }
 }
 
+/**
+ * @route   POST /api/v1/users/send-otp
+ * @desc    Send OTP to user's email for verification
+ * @access  Protected (only owner)
+ */
 async function sendEmailOtp(req, res, next) {
   try {
     const user = req.user;
@@ -117,6 +142,11 @@ async function sendEmailOtp(req, res, next) {
   }
 }
 
+/**
+ * @route   POST /api/v1/users/verify-otp
+ * @desc    Verify OTP sent to user's email
+ * @access  Protected (only owner)
+ */
 async function verifyEmailOtp(req, res, next) {
   try {
     const userId = req.user.id;
