@@ -13,15 +13,12 @@ const questionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Topic'
   }],
-  created_at: {
-    type: Date,
-    default: Date.now
-  },
+ 
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   }
-});
+},{timestamps:true});
 
 module.exports = mongoose.model('Question', questionSchema); 

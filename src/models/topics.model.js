@@ -7,6 +7,6 @@ const topicSchema = new mongoose.Schema({
     unique: true,
     trim: true
   }
-});
+},{timestamps:true});
 
 module.exports = mongoose.model('Topic', topicSchema); 

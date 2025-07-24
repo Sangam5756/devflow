@@ -71,15 +71,16 @@ async function deleteQuestion(req, res, next) {
 async function updateQuestion(req, res, next) {
   try {
     const questionId = req.params.id;
-
+    console.log(questionId)
     if (!mongoose.Types.ObjectId.isValid(questionId)) {
       throw new BadRequestError("Invalid Question ID");
     }
     const payload = {
-      questionId: req.params.id,
+      questionId,
       userId: req.user.id,
       title: req.body.title,
       body: req.body.body,
+      topics:req.body.topics
     };
     const question = await questionService.updateQuestion(payload);
 
@@ -94,9 +95,19 @@ async function updateQuestion(req, res, next) {
   }
 }
 
-function getQuestion(req, res, next) {
+async function getQuestion(req, res, next) {
   try {
-    throw new NotimplementedError("getQuestion");
+        const questionId = req.params.id;
+        
+        const question = await questionService.getQuestion({_id:questionId});
+
+        return res.status(StatusCodes.OK).json({
+          success:true,
+          error:false,
+          message:"SuccessFull Retrived The Question",
+          data:question
+        })
+
   } catch (error) {
     next(error);
   }

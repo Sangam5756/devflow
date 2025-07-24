@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const likeSchema = new mongoose.Schema({
-  user_id: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  target_id: {
+  targetId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
   },
@@ -15,11 +15,8 @@ const likeSchema = new mongoose.Schema({
     enum: ['Question', 'Answer', 'Comment'],
     required: true
   },
-  created_at: {
-    type: Date,
-    default: Date.now
-  }
-});
+ 
+},{timestamps:true});
 
 
 module.exports = mongoose.model('Like', likeSchema);

@@ -11,11 +11,8 @@ const followSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  followedAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+ 
+},{timestamps:true});
 
 
 module.exports = mongoose.model('Follow', followSchema);

@@ -1,5 +1,7 @@
+const  mongoose  = require("mongoose");
 const NotFound = require("../error/notfound.error");
 const UnauthorizedError = require("../error/unauthorize.error");
+const { Topics } = require("../models");
 const { QuestionValidate } = require("../validation");
 
 class QuestionService {
@@ -10,8 +12,20 @@ class QuestionService {
   async createQuestion(questionBody) {
     QuestionValidate.validateQuestionBody(questionBody);
     const userId = questionBody.id;
+
+    const topicIds = await Promise.all(
+      questionBody?.topics.map(async (name) => {
+        const trimmedName = name.trim().toLowerCase();
+        let topic = await Topics.findOne({ name: trimmedName });
+        if (!topic) {
+          topic = await Topics.create({ name: trimmedName });
+        }
+        return topic._id;
+      })
+    );
     const payload = {
       title: questionBody.title,
+      topics: topicIds,
       body: questionBody.body,
       userId: userId,
     };
@@ -22,10 +36,14 @@ class QuestionService {
   }
 
   async getAllQuestions(userInfo) {
-    const questions = await this.questionRepository.findAll({
-      userId: userInfo.id,
-    });
+    const questions = await this.questionRepository.findAllQuestions(userInfo);
     return questions;
+  }
+
+  async getQuestion(questionId) {
+    const question = await this.questionRepository.findQuestion(questionId);
+
+    return question;
   }
 
   async deleteQuestion(question) {
@@ -53,7 +71,7 @@ class QuestionService {
   }
 
   async updateQuestion(questionBody) {
-    const { userId, questionId, body, title } = questionBody;
+    const { userId, questionId, body, title, topics } = questionBody;
 
     const question = await this.questionRepository.findById(questionId);
     if (!question) {
@@ -64,13 +82,40 @@ class QuestionService {
       throw new UnauthorizedError("Not authorized to update this question");
     }
 
-    // update the db
-    question.title = title;
-    question.body = body;
-    question.topics = [];
+    if (title !== undefined) {
+      question.title = title;
+    }
+
+    if (body !== undefined) {
+      question.body = body;
+    }
+
+    if (Array.isArray(topics)) {
+      const cleanedNames = topics.map((t) => t.trim().toLowerCase());
+
+      const newTopicDocs = await Promise.all(
+        cleanedNames.map(async (name) => {
+          const existing = await Topics.findOne({ name });
+          if (existing) return existing;
+          return await Topics.create({ name });
+        })
+      );
+
+      const mergedTopicIds = new Set([
+        ...question.topics.map((id) => id.toString()),
+        ...newTopicDocs.map((t) => t._id.toString()),
+      ]);
+
+      question.topics = Array.from(mergedTopicIds).map(
+        (id) => new mongoose.Types.ObjectId(id)
+      );
+    }
+
     await question.save();
-    return question;
+    return question.populate({ path: "topics", select: "name" });
   }
 }
+
+
 
 module.exports = QuestionService;

@@ -8,7 +8,7 @@ const questionRouter = express.Router();
 questionRouter.get("/",AuthMiddleware,QuestionController.getQuestions);
 questionRouter.get("/:id",QuestionController.getQuestion);
 questionRouter.post("/",AuthMiddleware,QuestionController.createQuestion); 
-questionRouter.put("/",QuestionController.updateQuestion);
+questionRouter.put("/:id",AuthMiddleware,QuestionController.updateQuestion);
 questionRouter.delete("/:id",AuthMiddleware,QuestionController.deleteQuestion);
 
 

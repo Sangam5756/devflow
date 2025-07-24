@@ -154,17 +154,13 @@ class UserService {
 
 
   async updateUser(userId, updateData) {
-    const allowedFields = ["username", "email", "bio", "password"];
+    const allowedFields = ["username", "email", "bio"];
     const updatePayload = {};
 
     for (const key of allowedFields) {
       if (updateData[key]) {
-        if (key === "password") {
-          updatePayload[key] = await bcrypt.hash(updateData[key], 10);
-        } else {
           updatePayload[key] = updateData[key];
-        }
-      }
+       }
     }
 
     const updatedUser = await this.userRepository.updateUserById(
