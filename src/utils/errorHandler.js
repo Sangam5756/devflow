@@ -1,7 +1,7 @@
-const { StatusCodes } = require("http-status-codes");
-const BaseError = require("../error/base.error");
+const { StatusCodes } = require('http-status-codes');
+const BaseError = require('../error/base.error');
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res) {
   if (err instanceof BaseError) {
     return res.status(err.statuscode).json({
       success: false,
@@ -11,16 +11,12 @@ function errorHandler(err, req, res, next) {
     });
   }
 
-  console.log(err);
-
   return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     success:false,
-    message: "Something went Wrong",
-    error: err.message || "An unexpected error occurred",
+    message: 'Something went Wrong',
+    error: err.message || 'An unexpected error occurred',
     data: {},
-  })
+  });
 }
-
-
 
 module.exports = errorHandler;

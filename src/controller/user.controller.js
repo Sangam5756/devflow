@@ -1,7 +1,6 @@
-const { StatusCodes } = require("http-status-codes");
-const NotimplementedError = require("../error/notimplemented.error");
-const { UserRepository } = require("../repositories");
-const { UserService } = require("../services");
+const { StatusCodes } = require('http-status-codes');
+const { UserRepository } = require('../repositories');
+const { UserService } = require('../services');
 
 const userService = new UserService(UserRepository);
 
@@ -10,7 +9,7 @@ async function login(req, res, next) {
     const userData = req.body;
     const { payload, token } = await userService.login(userData);
 
-    res.cookie("token", token, {
+    res.cookie('token', token, {
       httpOnly: true,
       secure: false, 
       maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -21,27 +20,28 @@ async function login(req, res, next) {
       error: false,
       data: payload,
       token,
-      message: "User logged in successfully",
+      message: 'User logged in successfully',
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
 async function register(req, res, next) {
   try {
     const userData = req.body;
-    const { payload, token } = await userService.createUser(userData);
+    const { payload } = await userService.createUser(userData);
 
     res.status(StatusCodes.CREATED).json({
       success: true,
       error: false,
       data: payload,
-      message: "Signup successfully",
+      message: 'Signup successfully',
     });
   } catch (error) {
-    console.error("Error in signup:", error);
-    next(error);
+    console.error('Error in signup:', error);
+    
+    return next(error);
   }
 }
 
@@ -59,11 +59,10 @@ async function getUser(req, res, next) {
         email: user.email,
         bio: user.bio,
       },
-      message: "User found",
+      message: 'User found',
     });
   } catch (error) {
-    next(error);
-    console.error("Error in getUser:", error);
+    return next(error);
   }
 }
 
@@ -83,11 +82,12 @@ async function updateUser(req, res, next) {
         email: updatedUser.email,
         bio: updatedUser.bio,
       },
-      message: "User updated successfully",
+      message: 'User updated successfully',
     });
   } catch (error) {
-    console.error("Error in updateUser:", error);
-    next(error);
+    console.error('Error in updateUser:', error);
+    
+    return next(error);
   }
 }
 
@@ -100,19 +100,21 @@ async function sendEmailOtp(req, res, next) {
       return res.status(StatusCodes.OK).json({
         success: true,
         error: false,
-        message: "otp sent successfull",
+        message: 'otp sent successfull',
         data: null,
       });
     }
     res.status(StatusCodes.OK).json({
       success: true,
       error: false,
-      message: "already verified",
+      message: 'already verified',
       data: null,
     });
   } catch (error) {
-    console.error("Error in verifyEmail:", error);
-    next(error);
+    
+    console.error('Error in verifyEmail:', error);
+    
+    return  next(error);
   }
 }
 
@@ -124,14 +126,14 @@ async function verifyEmailOtp(req, res, next) {
     const isVerified = await userService.verifyOtp({ userId, otp });
     if (isVerified) {
       res.status(StatusCodes.OK).json({
-        message: "Email is Successfully Verified",
+        message: 'Email is Successfully Verified',
         error: false,
         success: true,
         data:null
       });
     }
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 

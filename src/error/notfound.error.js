@@ -1,9 +1,9 @@
-const { StatusCodes } = require("http-status-codes");
-const BaseError = require("./base.error");
+const { StatusCodes } = require('http-status-codes');
+const BaseError = require('./base.error');
 
 class NotFound extends BaseError {
   constructor(message) {
-    super("NOT FOUND", StatusCodes.NOT_FOUND, message, {});
+    super('NOT FOUND', StatusCodes.NOT_FOUND, message, {});
   }
 }
 

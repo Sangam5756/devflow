@@ -1,12 +1,13 @@
-const UnauthorizedError = require("../error/unauthorize.error");
-const NotFound = require("../error/notfound.error");
-const BadRequestError = require("../error/badrequest.error");
-const { generateJWTtoken } = require("../utils/jwt");
-const { UserDataValidate } = require("../validation");
-const bcrypt = require("bcrypt");
-const { generateAndHashOtp } = require("../utils/helper");
-const sendMailQueue = require("../queue/queue");
-const redisClient = require("../config/redis");
+const UnauthorizedError = require('../error/unauthorize.error');
+const NotFound = require('../error/notfound.error');
+const BadRequestError = require('../error/badrequest.error');
+const { generateJWTtoken } = require('../utils/jwt');
+const { UserDataValidate } = require('../validation');
+const bcrypt = require('bcrypt');
+const { generateAndHashOtp } = require('../utils/helper');
+const sendMailQueue = require('../queue/queue');
+const redisClient = require('../config/redis');
+const InternalServerError = require('../error/internalserver.error');
 
 class UserService {
   constructor(UserRepository) {
@@ -20,7 +21,7 @@ class UserService {
     });
     console.log(userExists);
     if (!userExists) {
-      throw new NotFound("User does not exist");
+      throw new NotFound('User does not exist');
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -29,7 +30,7 @@ class UserService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedError("Invalid Credentials");
+      throw new UnauthorizedError('Invalid Credentials');
     }
 
     const token = generateJWTtoken(userExists);
@@ -40,6 +41,7 @@ class UserService {
       username: userExists.username,
       bio: userExists.bio,
     };
+    
     return {
       token,
       payload,
@@ -54,7 +56,7 @@ class UserService {
       email: userData.email,
     });
     if (isUser) {
-      throw new BadRequestError("User already exists");
+      throw new BadRequestError('User already exists');
     }
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const user = await this.userRepository.create({
@@ -69,7 +71,7 @@ class UserService {
       username: user.username,
       bio: user?.bio,
     };
-    // create user
+    
     return { payload, token };
   }
 
@@ -81,6 +83,7 @@ class UserService {
     if (!user) {
       throw new NotFound(`User not found with username ${username}`);
     }
+    
     return user;
   }
 
@@ -90,7 +93,7 @@ class UserService {
     });
 
     if (!isUser) {
-      throw new NotFound("User not found");
+      throw new NotFound('User not found');
     }
 
     if (!isUser.isVerified) {
@@ -99,12 +102,12 @@ class UserService {
       await redisClient.setex(`otp:${isUser._id}`, 300, hashedOtp);
       console.log(otp, hashedOtp);
       const emailPayload = {
-        email: isUser?.email ? String(isUser.email) : "",
-        subject: String("Otp for Email Verification"),
+        email: isUser?.email ? String(isUser.email) : '',
+        subject: String('Otp for Email Verification'),
         message: String(`This is system generated otp ${otp}`),
       };
 
-      await sendMailQueue.add("send_otp_email", emailPayload);
+      await sendMailQueue.add('send_otp_email', emailPayload);
 
       return { isVerified: false };
     }
@@ -115,13 +118,13 @@ class UserService {
   async verifyOtp(userData) {
     const { userId, otp } = userData;
 
-    if (!otp || typeof otp !== "string" || otp.trim().length === 0) {
-      throw new BadRequestError("OTP is required");
+    if (!otp || typeof otp !== 'string' || otp.trim().length === 0) {
+      throw new BadRequestError('OTP is required');
     }
 
     const user = await this.userRepository.findUserByEntitiy({ _id: userId });
     if (!user) {
-      throw new NotFound("User not found");
+      throw new NotFound('User not found');
     }
 
     if (user.isVerified) {
@@ -130,11 +133,11 @@ class UserService {
 
     const redisKey = `otp:${user._id}`;
     const hashedOtp = await redisClient.get(redisKey);
-    console.log("inside the hashed", hashedOtp, otp);
+    console.log('inside the hashed', hashedOtp, otp);
     if (hashedOtp) {
       const isMatch = await bcrypt.compare(otp, hashedOtp);
       if (!isMatch) {
-        throw new BadRequestError("Invalid OTP");
+        throw new BadRequestError('Invalid OTP');
       }
     }
 
@@ -142,8 +145,8 @@ class UserService {
       isVerified: true,
     });
     if (!updatedUser) {
-      throw new InternalServerError(
-        "Failed to update user verification status"
+      throw new InternalServerError (
+        'Failed to update user verification status'
       );
     }
 
@@ -152,15 +155,14 @@ class UserService {
     return true;
   }
 
-
   async updateUser(userId, updateData) {
-    const allowedFields = ["username", "email", "bio"];
+    const allowedFields = ['username', 'email', 'bio'];
     const updatePayload = {};
 
     for (const key of allowedFields) {
       if (updateData[key]) {
-          updatePayload[key] = updateData[key];
-       }
+        updatePayload[key] = updateData[key];
+      }
     }
 
     const updatedUser = await this.userRepository.updateUserById(
@@ -168,7 +170,7 @@ class UserService {
       updatePayload
     );
     if (!updatedUser) {
-      throw new NotFound("User not found or update failed");
+      throw new NotFound('User not found or update failed');
     }
 
     return updatedUser;

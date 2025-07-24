@@ -12,7 +12,6 @@ const followSchema = new mongoose.Schema({
     required: true
   },
  
-},{timestamps:true});
-
+}, { timestamps:true });
 
 module.exports = mongoose.model('Follow', followSchema);
