@@ -28,7 +28,7 @@ async function createAnswer(req, res, next) {
       data: createAnswer,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -37,7 +37,7 @@ async function getAnswersByQuestion(req, res, next) {
   try {
     throw new NotImplementedError("getAnswersByQuestionController");
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -46,7 +46,7 @@ async function getAnswerById(req, res, next) {
   try {
     throw new NotImplementedError("getAnswerByIdController");
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -55,7 +55,7 @@ async function updateAnswer(req, res, next) {
   try {
     throw new NotImplementedError("updateAnswerController");
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -74,10 +74,10 @@ async function deleteAnswer(req, res, next) {
       error: false,
       success: true,
       message: "Answer Deleted successfully",
-      data: null,
+      data: deleteAnswer,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 

@@ -1,4 +1,3 @@
-const validator = require("validator");
 const BadRequestError = require("../error/badrequest.error");
 
 const validateAnswerBody = (answerBody) => {

@@ -21,7 +21,6 @@ export default defineConfig([
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "no-console": "off",
       "indent": ["error", 2, { SwitchCase: 1 }],
-      "quotes": ["error", "single", { avoidEscape: true }],
       "semi": ["error", "always"],
       "space-before-blocks": ["error", "always"],
       "keyword-spacing": ["error", { before: true, after: true }],
