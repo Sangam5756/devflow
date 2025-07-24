@@ -1,11 +1,11 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 const {
   SMTP_HOST,
   SMTP_PORT,
   SMTP_PASSWORD,
   SMTP_MAIL,
   SMTP_SERVICE,
-} = require('../config/server.config');
+} = require("../config/server.config");
 
 const sendEmail = async (options) => {
   console.log(options);
@@ -30,10 +30,10 @@ const sendEmail = async (options) => {
 
     // Send the email and return the result
     const mail = await transporter.sendMail(mailOptions);
-    
+
     return mail;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     throw error;
   }
 };

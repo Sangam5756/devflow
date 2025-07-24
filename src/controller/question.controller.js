@@ -1,8 +1,8 @@
-const { StatusCodes } = require('http-status-codes');
-const BadRequestError = require('../error/badrequest.error');
-const { QuestionRepository } = require('../repositories');
-const { QuestionService } = require('../services/');
-const { default: mongoose } = require('mongoose');
+const { StatusCodes } = require("http-status-codes");
+const BadRequestError = require("../error/badrequest.error");
+const { QuestionRepository } = require("../repositories");
+const { QuestionService } = require("../services/");
+const { default: mongoose } = require("mongoose");
 
 const questionService = new QuestionService(QuestionRepository);
 
@@ -14,14 +14,14 @@ async function createQuestion(req, res, next) {
     });
 
     if (!question) {
-      throw new BadRequestError('something went wrong');
+      throw new BadRequestError("something went wrong");
     }
 
     res.status(StatusCodes.CREATED).json({
       success: true,
       error: false,
       data: question,
-      message: 'Question Successfully Created',
+      message: "Question Successfully Created",
     });
   } catch (error) {
     return next(error);
@@ -31,11 +31,11 @@ async function createQuestion(req, res, next) {
 async function getQuestions(req, res, next) {
   try {
     const questions = await questionService.getAllQuestions(req.user);
-    
+
     return res.status(StatusCodes.OK).json({
       success: true,
       error: false,
-      message: 'retrieved All Question',
+      message: "retrieved All Question",
       data: questions,
     });
   } catch (error) {
@@ -48,7 +48,7 @@ async function deleteQuestion(req, res, next) {
     const questionId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(questionId)) {
-      throw new BadRequestError('Invalid Question ID');
+      throw new BadRequestError("Invalid Question ID");
     }
     const payload = {
       questionId: req.params.id,
@@ -63,7 +63,7 @@ async function deleteQuestion(req, res, next) {
       message: `question with id ${questionId} deleted successFully`,
     });
   } catch (error) {
-    return  next(error);
+    return next(error);
   }
 }
 
@@ -72,14 +72,14 @@ async function updateQuestion(req, res, next) {
     const questionId = req.params.id;
     console.log(questionId);
     if (!mongoose.Types.ObjectId.isValid(questionId)) {
-      throw new BadRequestError('Invalid Question ID');
+      throw new BadRequestError("Invalid Question ID");
     }
     const payload = {
       questionId,
       userId: req.user.id,
       title: req.body.title,
       body: req.body.body,
-      topics:req.body.topics
+      topics: req.body.topics,
     };
     const question = await questionService.updateQuestion(payload);
 
@@ -87,7 +87,7 @@ async function updateQuestion(req, res, next) {
       success: true,
       error: false,
       data: question,
-      message: 'question updated successFully',
+      message: "question updated successFully",
     });
   } catch (error) {
     return next(error);
@@ -97,16 +97,15 @@ async function updateQuestion(req, res, next) {
 async function getQuestion(req, res, next) {
   try {
     const questionId = req.params.id;
-        
-    const question = await questionService.getQuestion({ _id:questionId });
+
+    const question = await questionService.getQuestion({ _id: questionId });
 
     return res.status(StatusCodes.OK).json({
-      success:true,
-      error:false,
-      message:'SuccessFull Retrived The Question',
-      data:question
+      success: true,
+      error: false,
+      message: "SuccessFull Retrived The Question",
+      data: question,
     });
-
   } catch (error) {
     return next(error);
   }

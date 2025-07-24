@@ -1,8 +1,8 @@
-const  mongoose  = require('mongoose');
-const NotFound = require('../error/notfound.error');
-const UnauthorizedError = require('../error/unauthorize.error');
-const { Topics } = require('../models');
-const { QuestionValidate } = require('../validation');
+const mongoose = require("mongoose");
+const NotFound = require("../error/notfound.error");
+const UnauthorizedError = require("../error/unauthorize.error");
+const { Topics } = require("../models");
+const { QuestionValidate } = require("../validation");
 
 class QuestionService {
   constructor(QuestionRepository) {
@@ -11,9 +11,9 @@ class QuestionService {
 
   async createQuestion(questionBody) {
     QuestionValidate.validateQuestionBody(questionBody);
-    
+
     const userId = questionBody.id;
-    
+
     const payload = {
       title: questionBody.title,
       body: questionBody.body,
@@ -21,13 +21,13 @@ class QuestionService {
     };
 
     const question = await this.questionRepository.create(payload);
-    
+
     return question;
   }
 
   async getAllQuestions(userInfo) {
     const questions = await this.questionRepository.findAllQuestions(userInfo);
-    
+
     return questions;
   }
 
@@ -52,13 +52,13 @@ class QuestionService {
     });
 
     if (!isOwner) {
-      throw new UnauthorizedError('Not Authorized to Do this Operation');
+      throw new UnauthorizedError("Not Authorized to Do this Operation");
     }
 
     const questions = await this.questionRepository.delete({
       _id: question.questionId,
     });
-    
+
     return questions;
   }
 
@@ -71,7 +71,7 @@ class QuestionService {
     }
 
     if (question.userId.toString() !== userId.toString()) {
-      throw new UnauthorizedError('Not authorized to update this question');
+      throw new UnauthorizedError("Not authorized to update this question");
     }
 
     if (title !== undefined) {
@@ -88,10 +88,12 @@ class QuestionService {
       const newTopicDocs = await Promise.all(
         cleanedNames.map(async (name) => {
           const existing = await Topics.findOne({ name });
-          if (existing) {return existing;}
-          
+          if (existing) {
+            return existing;
+          }
+
           return await Topics.create({ name });
-        })
+        }),
       );
 
       const mergedTopicIds = new Set([
@@ -100,13 +102,13 @@ class QuestionService {
       ]);
 
       question.topics = Array.from(mergedTopicIds).map(
-        (id) => new mongoose.Types.ObjectId(id)
+        (id) => new mongoose.Types.ObjectId(id),
       );
     }
 
     await question.save();
-    
-    return question.populate({ path: 'topics', select: 'name' });
+
+    return question.populate({ path: "topics", select: "name" });
   }
 }
 

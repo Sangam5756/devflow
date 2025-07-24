@@ -1,5 +1,4 @@
-
 module.exports = {
-  UserDataValidate: require('./userValidation'),
-  QuestionValidate:require('./questionValidation')
+  UserDataValidate: require("./userValidation"),
+  QuestionValidate: require("./questionValidation"),
 };

@@ -1,5 +1,5 @@
-const BaseRepository = require('./base.repository');
-const userModel = require('../models/user.model');
+const BaseRepository = require("./base.repository");
+const userModel = require("../models/user.model");
 
 class UserRepository extends BaseRepository {
   constructor() {
@@ -8,7 +8,7 @@ class UserRepository extends BaseRepository {
 
   async findUserByEntitiy(entity) {
     console.log(entity);
-    
+
     return this.model.findOne(entity);
   }
 

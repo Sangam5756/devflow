@@ -1,4 +1,4 @@
 module.exports = {
-  userController: require('./user.controller'),
-  QuestionController: require('./question.controller'),
+  userController: require("./user.controller"),
+  QuestionController: require("./question.controller"),
 };
