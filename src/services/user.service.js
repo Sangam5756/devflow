@@ -8,6 +8,7 @@ const { generateAndHashOtp } = require("../utils/helper");
 const sendMailQueue = require("../queue/queue");
 const redisClient = require("../config/redis");
 const InternalServerError = require("../error/internalserver.error");
+const logger = require("../config/logger.config");
 
 class UserService {
   constructor(UserRepository) {
@@ -23,7 +24,6 @@ class UserService {
     const userExists = await this.userRepository.findUserByEntitiy({
       email: userData.email,
     });
-    console.log(userExists);
     if (!userExists) {
       throw new NotFound("User does not exist");
     }
@@ -45,6 +45,9 @@ class UserService {
       username: userExists.username,
       bio: userExists.bio,
     };
+    logger.info(
+      `user.service: User login with username: ${payload.username} success`,
+    );
 
     return {
       token,
@@ -81,6 +84,10 @@ class UserService {
       bio: user?.bio,
     };
 
+    logger.info(
+      `user.service: User signup with username: ${payload.username} successfull`,
+    );
+
     return { payload, token };
   }
 
@@ -95,6 +102,8 @@ class UserService {
     });
 
     if (!user) {
+      logger.error(`user.service: User  with username: ${username} not found `);
+
       throw new NotFound(`User not found with username ${username}`);
     }
 
