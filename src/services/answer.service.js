@@ -25,6 +25,11 @@ class AnswerService {
     return answer;
   }
 
+  /**
+   * @desc Delete Answer
+   * @param {Object|String} answerBody - questionId
+   * @returns {Object} deleted answer
+   */
   async deleteAnswer(answerBody) {
     const { id: userId, answerId } = answerBody;
 
@@ -43,6 +48,54 @@ class AnswerService {
     await this.answerRepository.delete(answerId);
 
     return answer;
+  }
+
+  /**
+   * @desc get  Answer by question
+   * @param {String} questionId -
+   * @returns {Object} new answer
+   */
+  async getAnswerbyQuestion(questionId) {
+    const question = await this.answerRepository.findAll({
+      questionId: questionId,
+    });
+
+    return question;
+  }
+
+  async getAnswerById(answerId) {
+    const answer = await this.answerRepository.findById(answerId);
+    if (!answer) {
+      throw new NotFound(`answer with ${answerId} not found`);
+    }
+
+    return answer;
+  }
+
+  async updateAnswer(answerBody) {
+    const answer = await this.answerRepository.findOne({
+      _id: answerBody.answerId,
+    });
+    // if answer is not found then return not found
+    if (!answer) {
+      throw new NotFound(`Answer with ${answerBody.answerId} not found`);
+    }
+    // if answer is found check the answer is belong to that user
+    const userId = answerBody.id;
+    if (answer.userId.toString() !== userId.toString()) {
+      throw new UnauthorizedError("Not Authorized to update the answer");
+    }
+
+    // if the answer is found take the body and update the answer
+    if (answerBody.answer) {
+      answer.answer = answerBody.answer;
+    }
+    console.log(answerBody);
+    // return the updated answer to the user
+    const updatedAnswer = await answer.save();
+    console.log(updatedAnswer);
+
+    return updatedAnswer;
   }
 }
 

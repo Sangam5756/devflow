@@ -36,7 +36,7 @@ answerRouter.post(
  * @desc Update the existing answer
  * @access Protected (only answer owner)
  */
-answerRouter.put("/:answerId", AnswerController.updateAnswer);
+answerRouter.put("/:answerId", AuthMiddleware, AnswerController.updateAnswer);
 
 /**
  * @route DELETE /api/v1/answer/:answerId

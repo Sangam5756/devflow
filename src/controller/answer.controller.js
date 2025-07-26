@@ -1,4 +1,3 @@
-const NotImplementedError = require("../error/notimplemented.error");
 const { AnswerService } = require("../services");
 const { AnswerRepository } = require("../repositories");
 const { StatusCodes } = require("http-status-codes");
@@ -35,7 +34,14 @@ async function createAnswer(req, res, next) {
 // Get all answers for a specific question
 async function getAnswersByQuestion(req, res, next) {
   try {
-    throw new NotImplementedError("getAnswersByQuestionController");
+    const questionId = req.params.questionId;
+    const question = await answerService.getAnswerbyQuestion(questionId);
+    res.status(StatusCodes.OK).json({
+      message: "answer retrived successfully",
+      data: question,
+      success: true,
+      error: false,
+    });
   } catch (error) {
     return next(error);
   }
@@ -44,7 +50,16 @@ async function getAnswersByQuestion(req, res, next) {
 // Get a specific answer by ID
 async function getAnswerById(req, res, next) {
   try {
-    throw new NotImplementedError("getAnswerByIdController");
+    const answerId = req.params.answerId;
+
+    const answer = await answerService.getAnswerById(answerId);
+
+    res.status(StatusCodes.OK).json({
+      message: `answer with ${answerId} is retrived successfully`,
+      data: answer,
+      success: true,
+      error: false,
+    });
   } catch (error) {
     return next(error);
   }
@@ -53,7 +68,20 @@ async function getAnswerById(req, res, next) {
 // Update an existing answer
 async function updateAnswer(req, res, next) {
   try {
-    throw new NotImplementedError("updateAnswerController");
+    const answerId = req.params.answerId;
+    const answerBody = {
+      ...req.user,
+      answerId,
+      answer: req.body.answer,
+    };
+    const answer = await answerService.updateAnswer(answerBody);
+
+    res.status(StatusCodes.OK).json({
+      message: "answer updated successfully",
+      data: answer,
+      success: true,
+      error: false,
+    });
   } catch (error) {
     return next(error);
   }
