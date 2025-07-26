@@ -19,10 +19,24 @@ class AnswerService {
       userId: answerBody.id,
       answer: answerBody.answer,
       questionId: answerBody.questionId,
+      parentAnswerId: answerBody.parentAnswerId || null,
     };
+
     const answer = await this.answerRepository.create(payload);
 
     return answer;
+  }
+
+  //  Recursive helper to delete the answer when the parentAnswer deleted
+  async _deleteRepliesRecursive(parentId) {
+    const replies = await this.answerRepository.findAll({
+      parentAnswerId: parentId,
+    });
+    for (const reply of replies) {
+      // recursively we are calling same function for each reply to question
+      await this._deleteRepliesRecursive(reply._id);
+      await this.answerRepository.delete(reply._id);
+    }
   }
 
   /**
@@ -44,7 +58,10 @@ class AnswerService {
       throw new UnauthorizedError("Not authorized to delete this answer");
     }
 
-    // Step 3: Proceed to delete
+    // Step 3: Recursive delete child replies
+    await this._deleteRepliesRecursive(answerId);
+
+    // Step 4: Delete the answer itself
     await this.answerRepository.delete(answerId);
 
     return answer;
@@ -55,9 +72,10 @@ class AnswerService {
    * @param {String} questionId -
    * @returns {Object} new answer
    */
-  async getAnswerbyQuestion(questionId) {
+  async getAnswerbyQuestion({ questionId, parentAnswerId }) {
     const question = await this.answerRepository.findAll({
       questionId: questionId,
+      parentAnswerId: parentAnswerId,
     });
 
     return question;

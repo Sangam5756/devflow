@@ -35,7 +35,11 @@ async function createAnswer(req, res, next) {
 async function getAnswersByQuestion(req, res, next) {
   try {
     const questionId = req.params.questionId;
-    const question = await answerService.getAnswerbyQuestion(questionId);
+    const parentAnswerId = req.query.parentAnswerId;
+    const question = await answerService.getAnswerbyQuestion({
+      questionId: questionId,
+      parentAnswerId: parentAnswerId || null,
+    });
     res.status(StatusCodes.OK).json({
       message: "answer retrived successfully",
       data: question,

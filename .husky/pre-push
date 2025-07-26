@@ -3,4 +3,5 @@
 
 echo "Running full ESLint on codebase..."
 npm run lint
+npm test
 

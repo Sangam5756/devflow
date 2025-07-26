@@ -11,6 +11,11 @@ const answerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    parentAnswerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Answer",
+      default: null,
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

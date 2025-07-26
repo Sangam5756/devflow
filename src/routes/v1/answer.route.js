@@ -5,7 +5,7 @@ const answerRouter = express.Router();
 
 /**
  * @route GET /api/v1/answer/question/:question
- * @desc  get all answer for a specific question
+ * @desc  Get all answers for a question. Optional ?parentAnswerId=xyz to fetch replies.
  * @access Public
  */
 answerRouter.get(
