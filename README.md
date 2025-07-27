@@ -1,6 +1,6 @@
 # 💡 DevFlow
 
-DevFlow is a full-stack, production-grade **developer Q\&A platform** inspired by Stack Overflow — with added features like **threaded answers**, **email verification**, **modular service architecture**, and **structured logging**.
+DevFlow is a full-stack, production-grade **developer Q\&A platform** inspired by Stack Overflow // Twitter(x) // Quora — with added features like **threaded answers**, **email verification**, **modular service architecture**, and **structured logging**.
 
  👨‍💻 Built with a scalable architecture in mind, DevFlow empowers users to ask programming questions, post answers, and engage in in-depth threaded conversations.
 
