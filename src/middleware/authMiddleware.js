@@ -19,6 +19,19 @@ async function authMiddleware(req, res, next) {
 
     return next();
   } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return next(
+        new UnauthorizedError(
+          "Session expired. Please log in again.",
+          "token is expired",
+        ),
+      );
+    }
+
+    if (error.name === "JsonWebTokenError") {
+      return next(new UnauthorizedError("Invalid token. Please log in again."));
+    }
+
     return next(error);
   }
 }
