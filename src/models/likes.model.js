@@ -13,11 +13,18 @@ const likeSchema = new mongoose.Schema(
     },
     target_type: {
       type: String,
-      enum: ["Question", "Answer", "Comment"],
+      enum: ["Question", "Answer"],
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ["like", "dislike"],
       required: true,
     },
   },
   { timestamps: true },
 );
+
+likeSchema.index({ userId: 1, targetId: 1, target_type: 1 }, { unique: true });
 
 module.exports = mongoose.model("Like", likeSchema);
