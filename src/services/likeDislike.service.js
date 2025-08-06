@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const BadRequestError = require("../error/badrequest.error");
+const NotFound = require("../error/notfound.error");
 
 class LikeDislikeService {
   constructor(LikeDislikeRepository, QuestionRepository, AnswerRepository) {
@@ -18,6 +20,31 @@ class LikeDislikeService {
    * @throws {BadRequestError} If the target type is invalid.
    * @returns {Promise<void>}
    */
+
+  async validateTargetExistence(targetId, target_type) {
+    if (!mongoose.Types.ObjectId.isValid(targetId)) {
+      throw new BadRequestError("Invalid target ID.");
+    }
+
+    let model;
+
+    switch (target_type) {
+      case "Question":
+        model = this.questionRepository;
+        break;
+      case "Answer":
+        model = this.answerRepository;
+        break;
+      default:
+        throw new BadRequestError("Invalid target type.");
+    }
+
+    const target = await model.findById(targetId);
+
+    if (!target) {
+      throw new NotFound(`${target_type} not found.`);
+    }
+  }
 
   async like({ userId, targetId, targetType }) {
     await this.validateTargetExistence(targetId, targetType);

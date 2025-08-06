@@ -8,12 +8,25 @@ class QuestionRepository extends BaseRepository {
   async findAllQuestions(userInfo) {
     return this.model
       .find({ userId: userInfo.id })
-      .populate({ path: "topics", select: "name" });
+      .populate({ path: "topics", select: "name" })
+      .lean();
   }
   async findQuestion(questionId) {
     return this.model
       .find({ _id: questionId })
-      .populate({ path: "topics", select: "name" });
+      .populate({ path: "topics", select: "name" })
+      .lean();
+  }
+
+  async getPublicQuestions(limit) {
+    const questions = await this.model
+      .find({})
+      .populate("userId", "username")
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    return questions;
   }
 }
 

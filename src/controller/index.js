@@ -4,4 +4,5 @@ module.exports = {
   AnswerController: require("./answer.controller"),
   FollowController: require("./follow.controller"),
   LikesController: require("./like_dislike.controller"),
+  FeedController: require("./feed.controller"),
 };

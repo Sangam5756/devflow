@@ -88,7 +88,7 @@ async function getUser(req, res, next) {
  */
 async function updateUser(req, res, next) {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const updateData = req.body;
 
     const updatedUser = await userService.updateUser(userId, updateData);
