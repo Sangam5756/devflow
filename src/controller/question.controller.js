@@ -52,7 +52,7 @@ async function getQuestion(req, res, next) {
 
     const question = await questionService.getQuestion({
       _id: questionId,
-      userId: req.user.id,
+      userId: req?.user?.id,
     });
 
     return res.status(StatusCodes.OK).json({

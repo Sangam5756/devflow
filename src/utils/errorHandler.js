@@ -10,6 +10,7 @@ function errorHandler(err, req, res, _next) {
       data: {},
     });
   }
+  console.log(err);
 
   return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     success: false,
