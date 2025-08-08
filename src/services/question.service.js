@@ -113,6 +113,7 @@ class QuestionService {
 
     return {
       id: question._id,
+      title: question.title,
       content: question.body,
       author: {
         name: question.userId.name,
