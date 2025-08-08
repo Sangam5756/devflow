@@ -5,8 +5,10 @@ const { Topics } = require("../models");
 const { QuestionValidate } = require("../validation");
 
 class QuestionService {
-  constructor(QuestionRepository) {
+  constructor(QuestionRepository, LikesRepository, AnswerRepository) {
     this.questionRepository = QuestionRepository;
+    this.likesRepository = LikesRepository;
+    this.answerRepository = AnswerRepository;
   }
 
   /**
@@ -46,10 +48,83 @@ class QuestionService {
    * @param   {String|Object} questionId
    * @returns {Object} question
    */
-  async getQuestion(questionId) {
-    const question = await this.questionRepository.findQuestion(questionId);
+  async getQuestion({ _id, userId }) {
+    const question = await this.questionRepository.findQuestion(_id);
 
-    return question;
+    if (!question) {
+      throw new NotFound("Question not found");
+    }
+
+    // likes count for question
+    const likes = await this.likesRepository.countLikes(_id, "Question");
+
+    // isLiked for logged-in user
+    const isLiked = userId
+      ? !!(await this.likesRepository.findOne({
+          userId,
+          targetId: _id,
+          target_type: "Question",
+          type: "like",
+        }))
+      : false;
+
+    // isOwner for question
+    const isOwner = userId
+      ? String(question.userId._id) === String(userId)
+      : false;
+
+    // get all answers
+    const answers = await this.answerRepository.findAnswersByQuestionId(_id);
+
+    // enrich answers with likes, isLiked & isOwner
+    const enrichedAnswers = await Promise.all(
+      answers.map(async (ans) => {
+        const ansLikes = await this.likesRepository.countLikes(
+          ans._id,
+          "Answer",
+        );
+        const ansIsLiked = userId
+          ? !!(await this.likesRepository.findOne({
+              userId,
+              targetId: ans._id,
+              target_type: "Answer",
+              type: "like",
+            }))
+          : false;
+
+        const ansIsOwner = userId
+          ? String(ans.userId._id) === String(userId)
+          : false;
+
+        return {
+          id: ans._id,
+          content: ans.answer,
+          author: {
+            name: ans.userId.name,
+            username: ans.userId.username,
+          },
+          likes: ansLikes,
+          timestamp: ans.createdAt,
+          isLiked: ansIsLiked,
+          isOwner: ansIsOwner,
+        };
+      }),
+    );
+
+    return {
+      id: question._id,
+      content: question.body,
+      author: {
+        name: question.userId.name,
+        username: question.userId.username,
+      },
+      likes,
+      answer: answers.length,
+      timestamp: question.createdAt,
+      isLiked,
+      isOwner,
+      answers: enrichedAnswers,
+    };
   }
 
   /**

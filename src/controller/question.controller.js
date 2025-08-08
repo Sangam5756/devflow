@@ -1,10 +1,18 @@
 const { StatusCodes } = require("http-status-codes");
-const { QuestionRepository } = require("../repositories");
+const {
+  QuestionRepository,
+  LikesRepository,
+  AnswerRepository,
+} = require("../repositories");
 const { QuestionService } = require("../services/");
 const BadRequestError = require("../error/badrequest.error");
 const mongoose = require("mongoose");
 
-const questionService = new QuestionService(QuestionRepository);
+const questionService = new QuestionService(
+  QuestionRepository,
+  LikesRepository,
+  AnswerRepository,
+);
 
 /**
  * @route   POST /api/v1/question
@@ -42,7 +50,10 @@ async function getQuestion(req, res, next) {
   try {
     const questionId = req.params.id;
 
-    const question = await questionService.getQuestion({ _id: questionId });
+    const question = await questionService.getQuestion({
+      _id: questionId,
+      userId: req.user.id,
+    });
 
     return res.status(StatusCodes.OK).json({
       success: true,

@@ -13,8 +13,8 @@ class QuestionRepository extends BaseRepository {
   }
   async findQuestion(questionId) {
     return this.model
-      .find({ _id: questionId })
-      .populate({ path: "topics", select: "name" })
+      .findOne({ _id: questionId })
+      .populate("userId", "name username")
       .lean();
   }
 
