@@ -6,6 +6,9 @@ async function optionalAuthMiddleware(req, res, next) {
   const token = req.cookies.token;
 
   console.log(token);
+  if (!token) {
+    return next();
+  }
   const decoded = verifyJWTtoken(token);
   const user = await User.findById(decoded.id).select("-password");
 
