@@ -1,5 +1,5 @@
 class FeedService {
-  constructor(QuestionRepository, LikesRepository, AnswerRespository) {
+  constructor(QuestionRepository, LikesRepository) {
     this.questionRepository = QuestionRepository;
     this.likesRepository = LikesRepository;
   }
@@ -9,7 +9,7 @@ class FeedService {
 
     const enrichedQuestions = await Promise.all(
       questions.map(async (question) => {
-        const [likes, dislikes, answers] = await Promise.all([
+        const [likes, dislikes] = await Promise.all([
           this.likesRepository.countLikes(question._id, "Question"),
           this.likesRepository.countDislikes(question._id, "Question"),
         ]);

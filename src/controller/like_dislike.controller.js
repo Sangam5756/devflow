@@ -27,7 +27,7 @@ async function like(req, res, next) {
       data: result,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -46,7 +46,7 @@ async function dislike(req, res, next) {
       data: result,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 

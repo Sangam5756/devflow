@@ -24,7 +24,7 @@ const getPublicFeed = async (req, res, next) => {
       message: "feed retrived successfully",
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 

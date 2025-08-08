@@ -1,5 +1,3 @@
-const { User } = require("../models");
-
 const { verifyJWTtoken } = require("../utils/jwt");
 
 async function optionalAuthMiddleware(req, res, next) {
@@ -10,8 +8,6 @@ async function optionalAuthMiddleware(req, res, next) {
     return next();
   }
   const decoded = verifyJWTtoken(token);
-  const user = await User.findById(decoded.id).select("-password");
-
   req.user = decoded;
 
   return next();

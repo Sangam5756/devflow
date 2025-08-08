@@ -1,4 +1,3 @@
-const NotimplementedError = require("../error/notimplemented.error");
 const { FollowService } = require("../services");
 const { FollowRepository, UserRepository } = require("../repositories");
 const { StatusCodes } = require("http-status-codes");
@@ -19,7 +18,7 @@ async function followUser(req, res, next) {
       data: follow,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
@@ -37,7 +36,7 @@ async function unFollowUser(req, res, next) {
       data: follow,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 async function getFollowers(req, res, next) {
@@ -53,7 +52,7 @@ async function getFollowers(req, res, next) {
       data: follow,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 async function getFollowing(req, res, next) {
@@ -69,7 +68,7 @@ async function getFollowing(req, res, next) {
       data: follow,
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
