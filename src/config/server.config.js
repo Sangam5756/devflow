@@ -11,4 +11,5 @@ module.exports = {
   SMTP_SERVICE: process.env.SMTP_SERVICE,
   SMTP_MAIL: process.env.SMTP_MAIL,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+  FRONTEND_URL: process.env.FRONTEND_URL,
 };
