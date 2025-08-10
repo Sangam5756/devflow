@@ -5,6 +5,7 @@ const errorHandler = require("./src/utils/errorHandler");
 const connectDB = require("./src/config/db.config");
 const cookieparser = require("cookie-parser");
 const cors = require("cors");
+const swaggerDocs = require("./swagger");
 
 require("./src/queue/worker");
 
@@ -25,15 +26,19 @@ app.get("/", (req, res) => {
   res.status(200).send("server is running");
 });
 
+
+
 app.use(errorHandler);
 
 connectDB()
-  .then(() => {
-    console.log("Connected to MongoDB");
-    app.listen(PORT, async () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
+.then(() => {
+  console.log("Connected to MongoDB");
+  app.listen(PORT, async () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+  swaggerDocs(app);
+})
   .catch((error) => {
     console.error("Error connecting to MongoDB:", error);
   });
+  

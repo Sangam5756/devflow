@@ -8,11 +8,11 @@ const feedRouter = require("./feed.route");
 
 const v1Router = express.Router();
 
-v1Router.use("/feed", feedRouter);
 v1Router.use("/user", userRouter);
 v1Router.use("/answer", answerRouter);
 v1Router.use("/question", QuestionRouter);
 v1Router.use("/follow", followRouter);
+v1Router.use("/feed", feedRouter);
 v1Router.use("/like", likes_dislikesRouter);
 
 module.exports = v1Router;
