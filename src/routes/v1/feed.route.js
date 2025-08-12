@@ -32,12 +32,24 @@ const feedRouter = express.Router();
  *                   userId:
  *                     type: string
  *                     example: "64dc1234abcd5678efgh9012"
+ *                   topics:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: "javascript"
  *                   likes:
  *                     type: integer
  *                     example: 12
  *                   dislikes:
  *                     type: integer
  *                     example: 3
+ *                   replies:
+ *                     type: integer
+ *                     example: 3
+ *                   isLike:
+ *                     type: boolean
+ *                     example: true
  *                   createdAt:
  *                     type: string
  *                     format: date-time

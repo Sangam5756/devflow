@@ -12,6 +12,10 @@ class AnswerRepository extends BaseRepository {
       .populate("userId", "name username")
       .lean();
   }
+
+  async countAnswers(questionId) {
+    return this.model.countDocuments(questionId);
+  }
 }
 
 module.exports = new AnswerRepository();
