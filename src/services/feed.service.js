@@ -32,6 +32,11 @@ class FeedService {
 
     return enrichedQuestions;
   }
+  async getPrivateFeed(limit = 20, _userId = null) {
+    const questions = await this.questionRepository.getPublicQuestions(limit);
+
+    return questions;
+  }
 }
 
 module.exports = FeedService;
