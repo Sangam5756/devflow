@@ -1,57 +1,3 @@
-# 1 — PlantUML code
-
-
-```plantuml
-@startuml
-' Title
-title Materialized Feed Architecture (BullMQ + Redis + MongoDB)
-
-actor "Client (Browser / Mobile)" as Client
-node "API Server\n(Node.js / Express)" as API
-database "MongoDB\nPrimary DB\n(Questions, Likes, Answers)" as Mongo
-database "MongoDB\nFeed Collection\n(denormalized)" as FeedDB
-folder "Redis\nBullMQ" as Redis
-node "Feed Worker\n(BullMQ Worker)" as Worker
-node "Backfill Job\n(Batch Script)" as Backfill
-cloud "Monitoring / Metrics\n(Prometheus / Grafana)" as Monitoring
-
-Client --> API : GET /feed/public
-API --> FeedDB : Query feed (fast indexed read)
-API --> Mongo : (writes) create Question / Like / Answer / Update
-API --> Redis : push job to queue (feed-updates)\n(e.g. like-added, answer-added)
-API --> Client : 200 OK (feed JSON)
-
-Redis --> Worker : job consumed
-Worker --> FeedDB : upsert / $inc (likes,dislikes,replies)
-Worker --> Mongo : optionally read question snapshot (on question-created/update)
-Worker --> Redis : ack (job completed)
-
-Backfill --> Mongo : scan questions, counts
-Backfill --> FeedDB : bulk upsert seed / reconcile
-
-Monitoring <.. API : metrics
-Monitoring <.. Worker : worker metrics
-Monitoring <.. Redis : queue depth
-
-' Notes
-note right of API
-  - Publish events (like-added, like-removed,\n    dislike-added, answer-added, question-created)
-  - API only pushes job, returns quickly
-end note
-
-note left of Worker
-  - Jobs processed concurrently
-  - Atomic updates with $inc
-  - Idempotency & retries via BullMQ
-end note
-
-@enduml
-```
-
----
-
-
-````markdown
 # Materialized Feed Service (BullMQ + Redis + MongoDB)
 
 ## Overview
@@ -80,8 +26,9 @@ Reads are fast (single query to `Feed`), and expensive aggregations are handled 
     "likes": 0,
     "dislikes": 0,
     "replies": 0
-  }
-````
+  }```
+
+
 
 * **Backfill script**: Recompute and populate `Feed` documents from primary DB to recover drift.
 
@@ -163,9 +110,8 @@ Prereqs: Node.js, MongoDB, Redis
 
 MIT
 
-```
 
----
+
 
 # 3 — Cause-of-change examples in STAR format
 
@@ -210,4 +156,4 @@ Below are short STAR entries for the common events that cause the feed to change
   - c) the worker code with idempotency (event dedupe with Redis or Mongo dedupe table)?
 
 Tell me which of (a–c) to deliver next and I’ll produce the code files ready to paste into your project.
-```
+
