@@ -213,6 +213,10 @@ class QuestionService {
 
     return question.populate({ path: "topics", select: "name" });
   }
+
+  async update() {
+    return null;
+  }
 }
 
 module.exports = QuestionService;
