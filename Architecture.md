@@ -76,7 +76,7 @@ Also shows how the frontend communicates with backend routes and how backend com
 
 
 ## 🧠 Entity Relationship Diagram (ERD)
-![ER Diagram](./Design/ER_Diagram.png)
+![ER Diagram](./Design/database/ER_Diagram.png)
 
 
 
@@ -101,7 +101,7 @@ Also shows how the frontend communicates with backend routes and how backend com
             - findPostById
             - createPOst
             - updatePost
-            - DelelePost
+            - DeletePost
             - getAllPost
             -getPostById
             
