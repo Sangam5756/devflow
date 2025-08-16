@@ -2,6 +2,7 @@ const UnauthorizedError = require("../error/unauthorize.error");
 const NotFound = require("../error/notfound.error");
 const BadRequestError = require("../error/badrequest.error");
 const { generateJWTtoken } = require("../utils/jwt");
+const { verifyGoogleToken, verifyGithubToken } = require("../utils/oauth");
 const { UserDataValidate } = require("../validation");
 const bcrypt = require("bcrypt");
 const { generateAndHashOtp } = require("../utils/helper");
@@ -9,7 +10,6 @@ const sendMailQueue = require("../queue/queue");
 const redisClient = require("../config/redis");
 const InternalServerError = require("../error/internalserver.error");
 const logger = require("../config/logger.config");
-
 class UserService {
   constructor(UserRepository) {
     this.userRepository = UserRepository;
@@ -55,6 +55,55 @@ class UserService {
     };
   }
 
+  /**
+   * @desc Login or register a user via OAuth (Google/GitHub) and return JWT
+   * @param {Object} userData - { email, username, provider, bio?,avatarUrl }
+   * @returns {Object} - { token, payload }
+   */
+  async oauthLogin({ provider, token }) {
+    let providerUser = null;
+
+    if (provider === "google") {
+      providerUser = await verifyGoogleToken(token);
+    } else if (provider === "github") {
+      providerUser = await verifyGithubToken(token);
+      console.log(providerUser);
+    } else {
+      throw new BadRequestError("Unsupported OAuth provider");
+    }
+
+    if (!providerUser?.email) {
+      throw new BadRequestError("Could not fetch user email from provider");
+    }
+
+    // Find or create user
+    let user = await this.userRepository.findUserByEntitiy({
+      email: providerUser.email,
+    });
+
+    if (!user) {
+      user = await this.userRepository.create({
+        email: providerUser.email,
+        username: providerUser.username,
+        avatarUrl: providerUser.avatarUrl,
+        oauthProvider: providerUser.provider,
+        isVerified: true,
+      });
+    }
+
+    const tokenJwt = generateJWTtoken(user);
+    console.log(user);
+
+    return {
+      token: tokenJwt,
+      payload: {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        avatarUrl: user.avatarUrl,
+      },
+    };
+  }
   /**
    * @desc Create a new user
    * @param {Object} userData - { email, password, username, [bio]}

@@ -15,7 +15,9 @@ const feedService = new FeedService(
 
 const getPublicFeed = async (req, res, next) => {
   try {
-    const feed = await feedService.getPublicFeed();
+    const userId = req?.user?.id;
+    const limit = parseInt(req.query.limit, 20) || 20;
+    const feed = await feedService.getPublicFeed(limit, userId);
 
     return res.status(StatusCodes.OK).json({
       success: true,

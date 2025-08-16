@@ -1,6 +1,7 @@
 const express = require("express");
 const { userController } = require("../../controller");
 const authMiddleware = require("../../middleware/authMiddleware");
+const optionalAuthMiddleware = require("../../middleware/optionalAuthMiddleware");
 
 const userRouter = express.Router();
 
@@ -69,7 +70,7 @@ userRouter.post("/verify", authMiddleware, userController.verifyEmailOtp);
  *       404:
  *         description: User not found
  */
-userRouter.get("/:username", userController.getUser);
+userRouter.get("/:username", optionalAuthMiddleware, userController.getUser);
 
 /**
  * @swagger
@@ -163,5 +164,43 @@ userRouter.post("/register", userController.register);
  *         description: Invalid credentials
  */
 userRouter.post("/login", userController.login);
+
+/**
+ * @swagger
+ * /user/oauth/login:
+ *   post:
+ *     summary: Login or register a user via OAuth (Google, GitHub, etc.)
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - username
+ *               - provider
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "john@example.com"
+ *               username:
+ *                 type: string
+ *                 example: "john_doe"
+ *               provider:
+ *                 type: string
+ *                 enum: [google, github]
+ *                 example: "google"
+ *               bio:
+ *                 type: string
+ *                 example: "Full-stack dev"
+ *     responses:
+ *       200:
+ *         description: OAuth login successful
+ *       400:
+ *         description: Missing required fields
+ */
+userRouter.post("/oauth/login", userController.oauthlogin);
 
 module.exports = userRouter;

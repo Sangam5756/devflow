@@ -32,6 +32,34 @@ async function login(req, res, next) {
     return next(error);
   }
 }
+/**
+ * @route   POST /api/v1/user/oauthlogin
+ * @desc    Login or register user via OAuth (Google/GitHub) and return JWT token
+ * @access  Public
+ */
+async function oauthlogin(req, res, next) {
+  try {
+    const userData = req.body; // { email, username, provider, bio? }
+    const { payload, token } = await userService.oauthLogin(userData);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // only secure in prod
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      error: false,
+      data: payload,
+      token,
+      message: `User logged in with ${userData.provider} successfully`,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
 
 /**
  * @route   POST /api/v1/user/register
@@ -65,6 +93,7 @@ async function getUser(req, res, next) {
   try {
     const username = req.params.username;
     const user = await userService.getUserByUsername(username);
+    const userId = req.user.id;
 
     res.status(StatusCodes.OK).json({
       success: true,
@@ -72,10 +101,10 @@ async function getUser(req, res, next) {
       data: {
         id: user._id,
         username: user.username,
-        email: user.email,
+        email: userId.toString() === user._id.toString() ? user.email : null,
         bio: user.bio,
       },
-      message: "User found",
+      message: "User retrieved successfully",
     });
   } catch (error) {
     return next(error);
@@ -174,4 +203,5 @@ module.exports = {
   updateUser,
   sendEmailOtp,
   verifyEmailOtp,
+  oauthlogin,
 };

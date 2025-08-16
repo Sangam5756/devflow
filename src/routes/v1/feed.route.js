@@ -1,5 +1,6 @@
 const express = require("express");
 const { FeedController } = require("../../controller");
+const optionalAuthMiddleware = require("../../middleware/optionalAuthMiddleware");
 
 const feedRouter = express.Router();
 
@@ -55,6 +56,6 @@ const feedRouter = express.Router();
  *                     format: date-time
  *                     example: "2025-08-10T08:00:00Z"
  */
-feedRouter.get("/public", FeedController.getPublicFeed);
+feedRouter.get("/public", optionalAuthMiddleware, FeedController.getPublicFeed);
 
 module.exports = feedRouter;

@@ -7,7 +7,7 @@ class FeedService {
 
   async getPublicFeed(limit = 20, userId = null) {
     const questions = await this.questionRepository.getPublicQuestions(limit);
-
+    console.log(userId);
     const enrichedQuestions = await Promise.all(
       questions.map(async (question) => {
         const [likes, dislikes, replies, isLike] = await Promise.all([
@@ -18,6 +18,8 @@ class FeedService {
             ? this.likesRepository.isUserLiked(question._id, "Question", userId)
             : false,
         ]);
+        const isOwner =
+          !!userId && question.userId?._id.toString() === userId.toString();
 
         return {
           ...question,
@@ -26,6 +28,7 @@ class FeedService {
           replies,
           loggedIn: !!userId,
           isLike,
+          isOwner,
         };
       }),
     );

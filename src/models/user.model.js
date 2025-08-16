@@ -21,11 +21,19 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.oauthProvider === "local";
+      },
     },
     bio: {
       type: String,
     },
+    oauthProvider: {
+      type: String,
+      enum: ["local", "google", "github"],
+      default: "local",
+    },
+    avatarUrl: String,
   },
   { timestamps: true },
 );
