@@ -93,7 +93,7 @@ async function getUser(req, res, next) {
   try {
     const username = req.params.username;
     const user = await userService.getUserByUsername(username);
-    const userId = req.user.id;
+    const userId = req?.user?.id;
 
     res.status(StatusCodes.OK).json({
       success: true,
@@ -101,7 +101,8 @@ async function getUser(req, res, next) {
       data: {
         id: user._id,
         username: user.username,
-        email: userId.toString() === user._id.toString() ? user.email : null,
+        email:
+          userId?.toString() === user?._id?.toString() ? user?.email : null,
         bio: user.bio,
       },
       message: "User retrieved successfully",
